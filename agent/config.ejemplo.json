@@ -1,0 +1,7 @@
+{
+  "servidor": "https://tu-app.up.railway.app",
+  "token": "el-mismo-valor-de-PRINT_AGENT_TOKEN",
+  "impresoraIp": "192.168.1.100",
+  "impresoraPuerto": 9100,
+  "intervaloSeg": 3
+}

@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel de ventas · La Birriaza</title>
+<link rel="icon" href="/img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3EEE5;--card:#FFFDF8;--line:#E3DACB;--ink:#1E1B17;--muted:#6B6257;--soft:#4A4238;--accent:#C8621F;--accent-d:#8E3A22;--bar:#B9AC99;--ok:#2F6B3A;--bad:#A3321C}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif}
+h1,h2{font-family:'Fraunces',serif;font-weight:500;margin:0}
+.mono{font-family:'IBM Plex Mono',monospace}
+button{font:inherit;cursor:pointer}
+a{color:var(--accent-d)}
+.layout{display:flex;flex-wrap:wrap;min-height:100vh}
+nav{flex:1 1 232px;max-width:100%;background:var(--ink);color:var(--bg);padding:28px 20px;display:flex;flex-direction:column;gap:24px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:46px;height:46px;border-radius:50%;background:var(--bg);object-fit:cover}
+.brand b{font-family:'Fraunces',serif;font-size:21px;font-weight:650;display:block}
+.brand span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#CDBFAC}
+nav a.item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:8px;color:#E4D9CA;text-decoration:none;font-size:14px;min-height:44px}
+nav a.item.on{background:#3A332B;color:#FFFDF8;font-weight:600}
+.status{margin-top:auto;padding:14px;border:1px solid #3A332B;border-radius:10px;font-size:13px;display:flex;flex-direction:column;gap:8px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;background:#8a8072}
+.dot.on{background:#6FBF73}.dot.off{background:#E0694A}
+main{flex:999 1 560px;min-width:0;padding:32px clamp(16px,3vw,40px) 48px;display:flex;flex-direction:column;gap:22px;max-width:1240px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+.kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-d);font-weight:600}
+h1{font-weight:650;font-size:clamp(28px,3vw,40px);line-height:1.05;margin-top:6px}
+.seg{display:flex;background:#E8DFD1;border-radius:10px;padding:4px;gap:2px}
+.seg button{border:0;background:transparent;color:var(--soft);font-size:14px;padding:0 14px;min-height:40px;border-radius:7px}
+.seg button[aria-pressed=true]{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(30,27,23,.12)}
+label.chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--soft);min-height:44px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.kpi{gap:8px}
+.kpi .l{font-size:13px;color:var(--muted);font-weight:500}
+.kpi .v{font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:500;letter-spacing:-.02em}
+.kpi .d{font-size:13px;font-weight:600;color:var(--muted)}
+.kpi .d.up{color:var(--ok)}.kpi .d.down{color:var(--bad)}
+.row{display:flex;flex-wrap:wrap;gap:16px}
+.row>.card{flex:1 1 320px}
+.row>.wide{flex:999 1 520px}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px}
+.head span{font-size:13px;color:var(--muted)}
+h2{font-size:21px}
+.scroll{overflow-x:auto;padding-top:10px}
+.chart{min-width:520px;position:relative;height:230px;display:flex;align-items:flex-end;gap:4px;padding-left:56px;border-bottom:1px solid #CDBFAC}
+.chart .grid{position:absolute;left:0;right:0;border-top:1px dashed var(--line)}
+.chart .yl{position:absolute;left:0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);transform:translateY(-50%)}
+.chart .b{flex:1 1 0;background:var(--bar);border-radius:4px 4px 0 0;min-height:1px;position:relative}
+.chart .b.we{background:var(--accent)}
+.chart .b:hover{outline:2px solid var(--ink)}
+.xl{min-width:520px;display:flex;gap:4px;padding-left:56px}
+.xl span{flex:1 1 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)}
+.stack{display:flex;height:18px;border-radius:6px;overflow:hidden;gap:2px;background:#F0E8DC}
+.legend{display:flex;align-items:center;gap:8px;font-size:13px}
+.sw{width:10px;height:10px;border-radius:3px;display:inline-block}
+.prod{display:flex;flex-direction:column;gap:6px}
+.prod .t{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.track{height:10px;background:#F0E8DC;border-radius:5px;overflow:hidden}
+.track div{height:100%;background:var(--accent);border-radius:5px}
+.heat{min-width:420px;display:grid;grid-template-columns:40px repeat(12,minmax(0,1fr));gap:4px;font-size:12px}
+.heat .c{height:26px;border-radius:4px}
+.heat .h{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);text-align:center}
+.bot{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.bot p{margin:0;font-size:14px;line-height:1.5;color:#CDBFAC}
+.fun{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.fun>div{background:#2C2620;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.fun .l{font-size:12px;color:#CDBFAC}.fun .v{font-family:'IBM Plex Mono',monospace;font-size:26px}
+.fun .track{background:#3A332B;height:6px}
+table{width:100%;min-width:820px;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;padding:10px 8px;border-bottom:1px solid var(--line);font-weight:600}
+td{padding:11px 8px;border-bottom:1px solid #F0E8DC;vertical-align:top}
+tr.click{cursor:pointer}tr.click:hover td{background:#FBF6EE}
+.chip{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.st-nuevo{background:#FBE3CF;color:#7A3410}.st-preparando{background:#FFF0C2;color:#6B4A00}.st-en_camino{background:#DDE8F6;color:#1F4C80}
+.st-listo{background:#E6DDF5;color:#4B2F80}.st-entregado{background:#DCEFDD;color:#245A2E}.st-cancelado{background:#EEE;color:#555}
+.test{font-size:11px;font-weight:600;color:var(--accent-d);margin-left:6px}
+.empty{color:var(--muted);font-size:14px;padding:12px 0}
+/* login */
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+.login form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px;width:100%;max-width:360px;display:flex;flex-direction:column;gap:14px;text-align:center}
+.login img{width:84px;height:84px;margin:0 auto;border-radius:50%}
+input[type=password]{font:inherit;padding:12px 14px;border:1px solid #CDBFAC;border-radius:10px;min-height:48px;background:#fff}
+.btn{border:0;background:var(--ink);color:#FFFDF8;font-weight:600;font-size:14px;padding:0 18px;min-height:48px;border-radius:10px}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid #CDBFAC}
+.err{color:var(--bad);font-size:14px;min-height:20px}
+/* detalle */
+dialog{border:0;border-radius:16px;padding:0;width:min(760px,calc(100vw - 32px));max-height:calc(100vh - 32px);background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(30,27,23,.55)}
+.dlg{padding:24px;display:flex;flex-direction:column;gap:16px}
+.dlg .cols{display:flex;flex-wrap:wrap;gap:20px}
+.dlg .cols>div{flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:10px}
+pre.ticket{background:#fbfbf7;border:1px solid var(--line);border-radius:8px;padding:14px;font-size:11.5px;line-height:1.35;overflow:auto;max-height:420px;margin:0}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+select{font:inherit;min-height:44px;border-radius:10px;border:1px solid #CDBFAC;padding:0 10px;background:#fff}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:14px;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.kv b{font-weight:600;text-align:right}
+@media (max-width:640px){nav{gap:14px;padding:16px}nav .menu{display:none}.status{margin-top:0}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<template id="tpl-login">
+  <div class="login">
+    <form id="loginForm">
+      <img src="/img/logo.png" alt="Logotipo de La Birriaza">
+      <h1 style="font-size:28px">Panel de ventas</h1>
+      <label for="pw" style="text-align:left;font-size:13px;color:var(--soft)">Contraseña</label>
+      <input id="pw" type="password" autocomplete="current-password" required>
+      <button class="btn" type="submit">Entrar</button>
+      <div class="err" id="loginErr" role="alert"></div>
+    </form>
+  </div>
+</template>
+
+<template id="tpl-panel">
+  <div class="layout">
+    <nav aria-label="Menú principal">
+      <div class="brand"><img src="/img/logo.png" alt=""><div><b>La Birriaza</b><span>Panel de ventas</span></div></div>
+      <div class="menu">
+        <a class="item on" href="#resumen">Resumen</a>
+        <a class="item" href="#pedidos">Pedidos</a>
+        <a class="item" href="#productos">Productos</a>
+        <a class="item" href="#bot">Bot de WhatsApp</a>
+      </div>
+      <div class="status" aria-live="polite">
+        <span><span class="dot" id="dotWa"></span><span id="txtWa">WhatsApp…</span></span>
+        <span><span class="dot" id="dotPr"></span><span id="txtPr">Impresora…</span></span>
+        <span id="txtCola" style="color:#CDBFAC;font-size:12px"></span>
+        <button class="btn ghost" id="logout" style="color:#F3EEE5;border-color:#3A332B;min-height:40px">Cerrar sesión</button>
+      </div>
+    </nav>
+    <main id="resumen">
+      <header>
+        <div><span class="kicker" id="rangeTxt"></span><h1>Resumen de ventas</h1></div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+          <label class="chk"><input type="checkbox" id="chkTest"> Incluir pedidos de prueba</label>
+          <div class="seg" role="group" aria-label="Periodo" id="seg">
+            <button type="button" data-d="1">Hoy</button>
+            <button type="button" data-d="7">7 días</button>
+            <button type="button" data-d="30" aria-pressed="true">30 días</button>
+            <button type="button" data-d="90">90 días</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="kpis" id="kpis" aria-label="Indicadores principales"></section>
+
+      <section class="row">
+        <div class="card wide">
+          <div class="head"><h2 id="chartTitle">Ventas por día</h2><span id="chartNote">Fines de semana en naranja</span></div>
+          <div class="scroll"><div id="chart"></div></div>
+        </div>
+        <div class="card">
+          <h2>Cómo pagan y reciben</h2>
+          <div id="splits"></div>
+        </div>
+      </section>
+
+      <section class="row">
+        <div class="card" id="productos">
+          <div class="head"><h2>Lo más vendido</h2><span>Unidades</span></div>
+          <div id="prods" style="display:flex;flex-direction:column;gap:14px"></div>
+        </div>
+        <div class="card wide">
+          <div class="head"><h2>Horas con más pedidos</h2><span>Pedidos por día y hora</span></div>
+          <div class="scroll"><div id="heat"></div></div>
+        </div>
+      </section>
+
+      <section class="card bot" id="bot" style="flex-direction:row;flex-wrap:wrap;align-items:center;gap:24px">
+        <div style="flex:1 1 260px;display:flex;flex-direction:column;gap:8px">
+          <h2 style="font-size:22px">Bot de WhatsApp</h2>
+          <p id="botTxt"></p>
+        </div>
+        <div class="fun" id="funnel" style="flex:2 1 420px"></div>
+      </section>
+
+      <section class="card" id="pedidos">
+        <div class="head"><h2>Últimos pedidos</h2><span>Toca un pedido para ver la comanda y cambiar su estado</span></div>
+        <div class="scroll"><table>
+          <thead><tr><th>Pedido</th><th>Fecha</th><th>Cliente</th><th>Productos</th><th>Entrega</th><th>Pago</th><th style="text-align:right">Total</th><th>Estado</th></tr></thead>
+          <tbody id="orders"></tbody>
+        </table></div>
+      </section>
+    </main>
+  </div>
+  <dialog id="dlg"><div class="dlg" id="dlgBody"></div></dialog>
+</template>
+
+<script>
+(() => {
+  const $ = (s, el = document) => el.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = (n) => '$' + Number(n || 0).toLocaleString('es-MX');
+  const ESTADOS = { nuevo: 'Nuevo', preparando: 'En preparación', en_camino: 'En camino', listo: 'Listo para recoger', entregado: 'Entregado', cancelado: 'Cancelado' };
+  const plural = (n) => n + (n === 1 ? ' pedido' : ' pedidos');
+  const fmtDate = (ms) => new Date(ms).toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+  let token = null;
+  try { token = sessionStorage.getItem('panelToken'); } catch (e) {}
+  let dias = 30, prueba = false, timer = null;
+
+  async function api(path, opts = {}) {
+    const res = await fetch('/api/panel' + path, {
+      ...opts,
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token, ...(opts.headers || {}) },
+    });
+    if (res.status === 401) { logout(); throw new Error('Sesión expirada'); }
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || 'Error ' + res.status);
+    return res.json();
+  }
+
+  function logout() {
+    token = null;
+    try { sessionStorage.removeItem('panelToken'); } catch (e) {}
+    clearInterval(timer);
+    showLogin();
+  }
+
+  function showLogin() {
+    $('#app').replaceChildren($('#tpl-login').content.cloneNode(true));
+    $('#pw').focus();
+    $('#loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      $('#loginErr').textContent = '';
+      const res = await fetch('/api/panel/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: $('#pw').value }) });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) { $('#loginErr').textContent = j.error || 'No se pudo entrar'; return; }
+      token = j.token;
+      try { sessionStorage.setItem('panelToken', token); } catch (e2) {}
+      showPanel();
+    });
+  }
+
+  function showPanel() {
+    $('#app').replaceChildren($('#tpl-panel').content.cloneNode(true));
+    $('#logout').addEventListener('click', logout);
+    $('#seg').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-d]');
+      if (!b) return;
+      dias = +b.dataset.d;
+      $('#seg').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+      load();
+    });
+    $('#chkTest').addEventListener('change', (e) => { prueba = e.target.checked; load(); });
+    load();
+    clearInterval(timer);
+    timer = setInterval(load, 30000);
+  }
+
+  function delta(v, unit = '%') {
+    if (v === null || v === undefined) return '<span class="d">Sin periodo anterior para comparar</span>';
+    const cls = v > 0 ? 'up' : v < 0 ? 'down' : '';
+    const sign = v > 0 ? '+' : '';
+    return `<span class="d ${cls}">${sign}${v}${unit === 'pts' ? ' puntos' : '%'} vs. periodo anterior</span>`;
+  }
+
+  async function load() {
+    try {
+      const q = `?dias=${dias}&prueba=${prueba ? 1 : 0}`;
+      const [s, p, st] = await Promise.all([api('/estadisticas' + q), api('/pedidos?limite=30&prueba=' + (prueba ? 1 : 0)), api('/estado')]);
+      render(s, p.pedidos, st);
+    } catch (e) { console.error(e); }
+  }
+
+  function render(s, pedidos, st) {
+    const f = (ms) => new Date(ms).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
+    $('#rangeTxt').textContent = (dias === 1 ? 'Hoy' : `${f(s.rango.inicio)} – ${f(s.rango.fin)}`) + (s.rango.prueba ? ' · incluye pruebas' : '');
+
+    // estado del sistema
+    $('#dotWa').className = 'dot ' + (st.whatsapp ? 'on' : 'off');
+    $('#txtWa').textContent = st.whatsapp ? 'WhatsApp conectado' : 'WhatsApp sin configurar';
+    $('#dotPr').className = 'dot ' + (st.impresora.online ? 'on' : 'off');
+    $('#txtPr').textContent = st.impresora.online ? 'Impresora en línea' : (st.impresora.lastSeen ? 'Impresora desconectada' : 'Agente de impresión sin conectar');
+    const cola = Object.fromEntries(st.cola.map((c) => [c.status, c.n]));
+    $('#txtCola').textContent = `Comandas pendientes: ${(cola.pendiente || 0) + (cola.imprimiendo || 0)}` + (cola.error ? ` · con error: ${cola.error}` : '');
+
+    const k = s.kpis;
+    $('#kpis').innerHTML = [
+      ['Ventas', money(k.ventas), delta(k.ventasCambio)],
+      ['Pedidos por WhatsApp', k.pedidos, delta(k.pedidosCambio)],
+      ['Ticket promedio', money(k.ticket), delta(k.ticketCambio)],
+      ['Pedidos completados por el bot', k.completado + '%', delta(k.completadoCambio, 'pts')],
+    ].map(([l, v, d]) => `<div class="card kpi"><span class="l">${l}</span><span class="v">${v}</span>${d}</div>`).join('');
+
+    // gráfica
+    const max = Math.max(100, ...s.serie.map((x) => x.valor));
+    const nice = Math.ceil(max / 500) * 500;
+    $('#chartTitle').textContent = dias === 1 ? 'Ventas por hora' : 'Ventas por día';
+    $('#chartNote').textContent = dias === 1 ? '' : 'Fines de semana en naranja';
+    const every = s.serie.length > 40 ? 10 : s.serie.length > 14 ? 5 : 1;
+    const label = dias === 1 ? s.serie.map((x) => `${x.etiqueta}:00: ${money(x.valor)}`) : s.serie.map((x) => `${x.dia} ${x.fecha}: ${money(x.valor)}`);
+    $('#chart').innerHTML = `
+      <div class="chart" role="img" aria-label="${esc(dias === 1 ? 'Ventas por hora de hoy' : 'Ventas diarias del periodo')}">
+        <div class="grid" style="top:0"></div><div class="grid" style="top:50%"></div>
+        <span class="yl" style="top:0">${money(nice)}</span><span class="yl" style="top:50%">${money(nice / 2)}</span>
+        ${s.serie.map((x, i) => `<div class="b ${x.finDeSemana ? 'we' : ''}" title="${esc(label[i])}" style="height:${(x.valor / nice) * 100}%"></div>`).join('')}
+      </div>
+      <div class="xl">${s.serie.map((x, i) => `<span>${i % every === 0 || i === s.serie.length - 1 ? esc(x.etiqueta) : ''}</span>`).join('')}</div>`;
+
+    // forma de pago y entrega
+    const bar = (parts) => {
+      const tot = parts.reduce((a, p) => a + p.n, 0) || 1;
+      return `<div class="stack" role="img" aria-label="${esc(parts.map((p) => `${p.l} ${Math.round((p.n / tot) * 100)} por ciento`).join(', '))}">${parts.map((p) => `<div style="width:${(p.n / tot) * 100}%;background:${p.c}"></div>`).join('')}</div>
+        ${parts.map((p) => `<div class="legend"><span class="sw" style="background:${p.c}"></span>${p.l} <b class="mono" style="font-weight:500">${Math.round((p.n / tot) * 100)}% · ${p.t}</b></div>`).join('')}`;
+    };
+    const pg = s.pago, en = s.entrega;
+    $('#splits').innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:13px;font-weight:600;color:var(--soft)">Forma de pago (ventas)</span>
+      ${bar([{ l: 'Transferencia', n: pg.transferencia?.ventas || 0, c: 'var(--accent)', t: money(pg.transferencia?.ventas) }, { l: 'Efectivo', n: pg.efectivo?.ventas || 0, c: '#3C352D', t: money(pg.efectivo?.ventas) }])}</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:18px"><span style="font-size:13px;font-weight:600;color:var(--soft)">Tipo de entrega (pedidos)</span>
+      ${bar([{ l: 'A domicilio', n: en.domicilio?.pedidos || 0, c: 'var(--accent)', t: plural(en.domicilio?.pedidos || 0) }, { l: 'Recoger en el local', n: en.recoger?.pedidos || 0, c: '#3C352D', t: plural(en.recoger?.pedidos || 0) }])}</div>`;
+
+    // productos
+    const pmax = Math.max(1, ...s.productos.map((x) => x.units));
+    $('#prods').innerHTML = s.productos.length ? s.productos.map((x) => `
+      <div class="prod"><div class="t"><span>${esc(x.name)}</span><span class="mono">${x.units}</span></div>
+      <div class="track"><div style="width:${(x.units / pmax) * 100}%"></div></div></div>`).join('') : '<div class="empty">Aún no hay ventas en este periodo.</div>';
+
+    // mapa de calor
+    const ramp = ['#F3E6D6', '#EBC9A3', '#DFA46A', '#C8621F', '#8E3A22'];
+    const hmax = Math.max(1, ...s.calor.filas.flatMap((r) => r.celdas));
+    const lvl = (v) => (v === 0 ? 0 : Math.min(4, 1 + Math.floor((v / hmax) * 3.999)));
+    $('#heat').innerHTML = `<div class="heat" role="img" aria-label="Pedidos por día de la semana y hora">
+      <span></span>${s.calor.horas.map((h) => `<span class="h">${h}</span>`).join('')}
+      ${s.calor.filas.map((r) => `<span style="align-self:center">${r.dia}</span>${r.celdas.map((v) => `<div class="c" title="${r.dia} · ${v} pedidos" style="background:${ramp[lvl(v)]}"></div>`).join('')}`).join('')}
+    </div>`;
+
+    // embudo del bot
+    const e = s.embudo;
+    $('#botTxt').innerHTML = e.inicio
+      ? `De cada 100 personas que escriben, <b style="color:#FFFDF8">${e.completado}</b> terminan su pedido.`
+      : 'Todavía no hay conversaciones en este periodo.';
+    const fm = Math.max(1, e.inicio);
+    $('#funnel').innerHTML = [['Conversaciones iniciadas', e.inicio], ['Armaron un pedido', e.carrito], ['Confirmaron el pedido', e.confirmado]]
+      .map(([l, v]) => `<div><span class="l">${l}</span><span class="v">${v}</span><div class="track"><div style="width:${(v / fm) * 100}%"></div></div></div>`).join('');
+
+    // pedidos
+    $('#orders').innerHTML = pedidos.length ? pedidos.map((o) => `
+      <tr class="click" data-id="${o.id}" tabindex="0">
+        <td class="mono">#${String(o.id).padStart(4, '0')}${o.source === 'simulador' ? '<span class="test">PRUEBA</span>' : ''}</td>
+        <td class="mono" style="white-space:nowrap">${fmtDate(o.created_at)}</td>
+        <td style="font-weight:600">${esc(o.customer)}</td>
+        <td style="color:var(--soft)">${esc(o.productos)}</td>
+        <td>${o.delivery === 'domicilio' ? 'A domicilio' : 'Recoger'}</td>
+        <td>${o.payment === 'efectivo' ? 'Efectivo' : 'Transferencia'}</td>
+        <td class="mono" style="text-align:right">${money(o.total)}</td>
+        <td><span class="chip st-${o.status}">${ESTADOS[o.status] || o.status}</span></td>
+      </tr>`).join('') : '<tr><td colspan="8" class="empty">Aún no hay pedidos.</td></tr>';
+    $('#orders').querySelectorAll('tr.click').forEach((tr) => {
+      tr.addEventListener('click', () => openOrder(+tr.dataset.id));
+      tr.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') openOrder(+tr.dataset.id); });
+    });
+  }
+
+  async function openOrder(id) {
+    const { pedido: o, comanda } = await api('/pedidos/' + id);
+    const dlg = $('#dlg');
+    const opts = Object.entries(ESTADOS).filter(([k]) => o.delivery === 'domicilio' ? k !== 'listo' : k !== 'en_camino')
+      .map(([k, v]) => `<option value="${k}" ${k === o.status ? 'selected' : ''}>${v}</option>`).join('');
+    const change = o.payment === 'efectivo' && o.pay_with ? `<div class="kv"><span>Paga con</span><b>${money(o.pay_with)} (cambio ${money(o.pay_with - o.total)})</b></div>` : '';
+    $('#dlgBody').innerHTML = `
+      <div class="head"><h2>Pedido #${String(o.id).padStart(4, '0')} ${o.source === 'simulador' ? '<span class="test">PRUEBA</span>' : ''}</h2>
+        <button class="btn ghost" id="dlgClose" aria-label="Cerrar">Cerrar</button></div>
+      <div class="cols">
+        <div>
+          <div class="kv"><span>Cliente</span><b>${esc(o.customer)}</b></div>
+          ${o.contact_phone ? `<div class="kv"><span>Llamar al llegar</span><b class="mono"><a href="tel:${esc(o.contact_phone)}">${esc(o.contact_phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a></b></div>` : ''}
+          <div class="kv"><span>WhatsApp</span><b class="mono">${esc(o.phone.startsWith('sim-') ? 'Simulador' : o.phone)}</b></div>
+          ${o.lat != null ? `<div class="kv"><span>Coordenadas</span><b class="mono">${Number(o.lat).toFixed(6)}, ${Number(o.lng).toFixed(6)}</b></div>` : ''}
+          <div class="kv"><span>Entrega</span><b>${o.delivery === 'domicilio' ? 'A domicilio' : 'Recoger en el local'}</b></div>
+          ${o.address ? `<div class="kv"><span>Dirección</span><b>${esc(o.address)}</b></div>` : ''}
+          ${o.reference ? `<div class="kv"><span>Referencia</span><b>${esc(o.reference)}</b></div>` : ''}
+          ${o.items.map((i) => `<div class="kv"><span>${i.qty} × ${esc(i.name)}</span><b class="mono">${money(i.amount)}</b></div>`).join('')}
+          ${o.shipping ? `<div class="kv"><span>Envío</span><b class="mono">${money(o.shipping)}</b></div>` : ''}
+          <div class="kv"><span>Total</span><b class="mono">${money(o.total)}</b></div>
+          <div class="kv"><span>Pago</span><b>${o.payment === 'efectivo' ? 'Efectivo' : 'Transferencia'}</b></div>
+          ${change}
+          <div class="actions">
+            ${o.mapa ? `<a class="btn ghost" style="display:inline-flex;align-items:center;text-decoration:none" target="_blank" rel="noopener" href="${esc(o.mapa)}">Ver ubicación</a>` : ''}
+            ${o.proof_media ? `<a class="btn ghost" style="display:inline-flex;align-items:center;text-decoration:none" target="_blank" rel="noopener" href="/api/panel/pedidos/${o.id}/comprobante?token=${encodeURIComponent(token)}">Ver comprobante</a>` : ''}
+            <button class="btn ghost" id="reprint">Reimprimir comanda</button>
+          </div>
+          <label for="selEstado" style="font-size:13px;color:var(--soft);margin-top:6px">Estado del pedido (se avisa al cliente por WhatsApp)</label>
+          <div class="actions"><select id="selEstado">${opts}</select><button class="btn" id="saveEstado">Guardar estado</button></div>
+          <div id="dlgMsg" role="status" style="font-size:13px;color:var(--ok)"></div>
+        </div>
+        <div><span style="font-size:13px;font-weight:600;color:var(--soft)">Comanda impresa</span><pre class="ticket">${esc(comanda)}</pre></div>
+      </div>`;
+    $('#dlgClose').onclick = () => dlg.close();
+    $('#reprint').onclick = async () => { await api(`/pedidos/${o.id}/reimprimir`, { method: 'POST' }); $('#dlgMsg').textContent = 'Comanda enviada de nuevo a la impresora.'; };
+    $('#saveEstado').onclick = async () => {
+      const r = await api(`/pedidos/${o.id}/estado`, { method: 'POST', body: JSON.stringify({ estado: $('#selEstado').value }) });
+      $('#dlgMsg').textContent = 'Estado guardado' + (r.aviso === 'enviado' ? ' y cliente avisado.' : r.aviso ? ` (no se pudo avisar: ${r.aviso})` : '.');
+      load();
+    };
+    dlg.showModal();
+  }
+
+  token ? showPanel() : showLogin();
+})();
+</script>
+</body>
+</html>
