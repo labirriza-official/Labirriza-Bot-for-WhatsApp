@@ -1,0 +1,23 @@
+{
+  "name": "la-birriaza-bot",
+  "version": "1.0.0",
+  "description": "Bot de pedidos por WhatsApp con comanda impresa y panel de ventas para La Birriaza",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test test/*.test.js",
+    "agente": "node agent/agente-impresion.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "dotenv": "^18.0.7",
+    "express": "^4.22.3",
+    "qrcode": "^1.5.4"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  }
+}

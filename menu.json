@@ -1,0 +1,43 @@
+{
+  "_instrucciones": "Edita precios y productos aquí. 'id' no debe cambiar una vez en uso. 'corto' es el nombre que sale en la comanda. Si una categoría tiene 'agrupar': true, en el menú aparece como una sola opción que abre sus productos (útil para bebidas). WhatsApp permite máximo 10 opciones por lista y 24 letras por nombre.",
+  "categorias": [
+    {
+      "id": "tacos",
+      "nombre": "Tacos",
+      "productos": [
+        { "id": "taco_blando", "nombre": "Taco blando", "corto": "TACO BLANDO", "precio": 20 },
+        { "id": "taco_blando_queso", "nombre": "Taco blando con queso", "corto": "TACO BLANDO C/QUESO", "precio": 25 },
+        { "id": "taco_duro", "nombre": "Taco duro", "corto": "TACO DURO", "precio": 25 },
+        { "id": "taco_duro_queso", "nombre": "Taco duro con queso", "corto": "TACO DURO C/QUESO", "precio": 28 }
+      ]
+    },
+    {
+      "id": "especialidades",
+      "nombre": "Especialidades",
+      "productos": [
+        { "id": "quesabirria", "nombre": "Quesabirria", "corto": "QUESABIRRIA", "precio": 35 },
+        { "id": "plato_birria", "nombre": "Plato de birria", "corto": "PLATO DE BIRRIA", "precio": 95 },
+        { "id": "birriamen", "nombre": "Birriamen", "corto": "BIRRIAMEN", "precio": 95 },
+        { "id": "consome", "nombre": "Consomé", "corto": "CONSOME", "precio": 25 }
+      ]
+    },
+    {
+      "id": "postres",
+      "nombre": "Postres",
+      "productos": [
+        { "id": "postre", "nombre": "Postre del día", "corto": "POSTRE", "precio": 35 }
+      ]
+    },
+    {
+      "id": "bebidas",
+      "nombre": "Bebidas",
+      "agrupar": true,
+      "descripcion": "Refrescos, aguas y agua del día",
+      "productos": [
+        { "id": "refresco", "nombre": "Refresco", "corto": "REFRESCO", "precio": 27 },
+        { "id": "agua_embotellada", "nombre": "Agua embotellada", "corto": "AGUA EMBOTELLADA", "precio": 25 },
+        { "id": "agua_dia", "nombre": "Agua del día", "corto": "AGUA DEL DIA", "precio": 35 }
+      ]
+    }
+  ]
+}
