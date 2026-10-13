@@ -1,0 +1,6 @@
+node_modules/
+data/
+.env
+agent/config.json
+*.db
+*.db-*
