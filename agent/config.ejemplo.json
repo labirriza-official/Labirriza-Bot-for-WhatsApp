@@ -1,7 +1,9 @@
 {
   "servidor": "https://tu-app.up.railway.app",
   "token": "el-mismo-valor-de-PRINT_AGENT_TOKEN",
-  "impresoraIp": "192.168.1.100",
+  "conexion": "usb",
+  "impresoraNombre": "POS-80",
+  "impresoraIp": "",
   "impresoraPuerto": 9100,
   "intervaloSeg": 3
 }

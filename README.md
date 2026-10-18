@@ -109,21 +109,28 @@ También funciona en Render o en un VPS con Docker: `docker build -t birriaza . 
 
 ## 4. Impresora de cocina y agente de impresión
 
-Se necesita una impresora térmica de **80 mm con conexión de red (Ethernet o Wi-Fi) compatible con ESC/POS**. Casi todas las Epson TM-T20/T88 y las genéricas "POS-80" lo son.
+Impresora del restaurante: **SPRT SP-POS8811** (80 mm, USB + red, corte automático, QR nativo). Funciona con la configuración por defecto (`TICKET_COLS=48`, `TICKET_QR_MODE=native`).
 
-1. **IP fija para la impresora:** imprime la hoja de configuración (normalmente se deja presionado el botón FEED al encenderla) para ver su IP. Luego reserva esa IP en el módem para que no cambie.
-2. En una **PC del restaurante** que esté en la misma red, instala [Node.js](https://nodejs.org) y copia la carpeta `agent/`.
-3. Copia `config.ejemplo.json` como `config.json` y llénalo:
+El agente corre en la **PC del restaurante con Windows** donde está conectada la impresora. Solo necesita [Node.js](https://nodejs.org) (versión LTS).
+
+### Opción A: impresora por USB (la configuración actual)
+1. Instala el **driver de la SP-POS8811** (viene en el CD o en la página de SPRT) y conecta la impresora por USB. Imprime una página de prueba desde Windows para confirmar.
+2. Copia la carpeta `agent/` a la PC (por ejemplo a `C:\Birriaza\agent`).
+3. Doble clic en **`ver-impresoras.bat`** y copia el nombre exacto de la impresora (columna *Name*).
+4. Copia `config.ejemplo.json` como `config.json` y llénalo:
    ```json
-   { "servidor": "https://TU-DOMINIO", "token": "igual a PRINT_AGENT_TOKEN", "impresoraIp": "192.168.1.100", "impresoraPuerto": 9100 }
+   { "servidor": "https://TU-DOMINIO", "token": "igual a PRINT_AGENT_TOKEN", "conexion": "usb", "impresoraNombre": "NOMBRE EXACTO" }
    ```
-4. Doble clic en **`probar-impresora.bat`**. Debe salir una hoja de prueba.
-5. Doble clic en **`iniciar-agente.bat`** y deja la ventana abierta.
-6. Para que arranque solo al prender la PC: presiona `Win + R`, escribe `shell:startup` y pega ahí un acceso directo a `iniciar-agente.bat`.
+5. Doble clic en **`probar-impresora.bat`**. Debe salir una hoja de prueba.
+6. Doble clic en **`iniciar-agente.bat`** y deja la ventana abierta (se puede minimizar).
+7. Para que arranque solo al prender la PC: `Win + R` → `shell:startup` → pega ahí un acceso directo a `iniciar-agente.bat`.
 
-El panel muestra en verde **Impresora en línea** cuando el agente está conectado.
+### Opción B: impresora por cable de red
+Conecta el puerto de red de la impresora al módem, imprime su hoja de configuración (botón FEED al encenderla) para ver la IP y reserva esa IP en el módem. En `config.json` usa `"conexion": "red"` e `"impresoraIp": "192.168.x.x"`. Así la impresora no depende del cable USB.
 
-Si tu impresora no imprime el QR, cambia `TICKET_QR_MODE=image`. Si salen símbolos raros en los acentos, cambia `TICKET_CODEPAGE=none`. Para papel de 58 mm usa `TICKET_COLS=32`.
+El panel muestra en verde **Impresora en línea** cuando el agente está conectado. Si la PC se apaga, las comandas esperan en el servidor y se imprimen al volver a encenderla.
+
+Si salen símbolos raros en los acentos, cambia `TICKET_CODEPAGE=none`.
 
 ---
 
