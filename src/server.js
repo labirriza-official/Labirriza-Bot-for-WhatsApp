@@ -27,6 +27,8 @@ function createApp() {
   }
 
   app.get('/', (req, res) => res.redirect('/panel/'));
+  // Aviso de privacidad (Meta lo pide para publicar la app de WhatsApp)
+  app.get(['/privacidad', '/eliminar-datos'], (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'privacidad.html')));
   app.use(express.static(path.join(__dirname, '..', 'public'), { maxAge: '1h' }));
 
   app.use((err, req, res, next) => {
