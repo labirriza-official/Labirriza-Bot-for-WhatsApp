@@ -217,3 +217,18 @@ test('el embudo registra inicio, carrito y confirmación', () => {
   assert.ok(m.carrito >= 4);
   assert.equal(m.confirmado, 3);
 });
+
+test('disparadores de conversación de WhatsApp van directo a la opción', () => {
+  let c = cliente('5212228888881', 'Leo');
+  let r = c.texto('Hacer pedido');
+  assert.equal(r.replies[0].type, 'list');
+  c = cliente('5212228888882', 'Leo');
+  r = c.texto('Ver el menú');
+  assert.equal(r.replies[0].type, 'list');
+  c = cliente('5212228888883', 'Leo');
+  r = c.texto('Ver promociones');
+  assert.match(textoDe(r), /Promociones/);
+  c = cliente('5212228888884', 'Leo');
+  r = c.texto('/menu');
+  assert.deepEqual(opciones(r), ['hacer_pedido', 'promos', 'humano']);
+});

@@ -563,6 +563,9 @@ function cancel(s) {
 
 const RESET_WORDS = ['inicio', 'reiniciar', 'empezar de nuevo', 'nuevo pedido'];
 
+// Textos de los disparadores de conversación (ice breakers) configurados en WhatsApp Manager, ya normalizados
+const DISPARADORES = ['hacer pedido', 'hacer un pedido', 'ver el menu', 'ver menu', 'ver promociones', 'hablar con alguien'];
+
 /**
  * Procesa un mensaje y devuelve { replies, orderId? }.
  * @param {object} msg mensaje normalizado
@@ -589,7 +592,9 @@ function handle(msg, ctx = {}) {
     s = { phone: msg.from, state: 'bienvenida', data: { source, profileName: msg.name || null, cart: [] } };
     db.logEvent(msg.from, 'inicio', source);
     // Si el primer mensaje ya es la elección de un botón (por ejemplo, un mensaje viejo), lo procesamos normal.
-    if (msg.kind !== 'reply') {
+    // Igual con los disparadores de conversación de WhatsApp ("Hacer pedido", "Ver el menú"...):
+    // el cliente ya eligió qué hacer, así que no le repetimos el saludo.
+    if (msg.kind !== 'reply' && !DISPARADORES.includes(typed)) {
       const out = prompts.bienvenida(s, { first: true });
       db.saveSession(s);
       return { replies: out };
