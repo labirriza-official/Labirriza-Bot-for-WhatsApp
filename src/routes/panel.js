@@ -76,7 +76,7 @@ router.get('/pedidos/:id', (req, res) => {
 
 const AVISOS = {
   en_camino: () => '🛵 ¡Tu pedido va en camino! En unos minutos llega el repartidor.',
-  listo: () => '🛍️ ¡Tu pedido está listo! Ya puedes pasar a recogerlo.',
+  listo: () => `🛍️ ¡Tu pedido está listo! Ya puedes pasar a recogerlo${config.restaurant.direccion ? ` a ${config.restaurant.direccion}` : '.'}`,
   entregado: () => `¡Gracias por tu compra! Esperamos que lo disfrutes. 🌮❤️ — ${config.restaurant.name}`,
   cancelado: () => `Tu pedido fue cancelado. Si tienes dudas, escríbenos por aquí. — ${config.restaurant.name}`,
 };

@@ -52,6 +52,7 @@ const config = {
     slogan: env('RESTAURANT_SLOGAN', 'Una experiencia para compartir'),
     horario: parseHorario(env('HORARIO')),
     telefono: env('TELEFONO_CONTACTO'),
+    direccion: env('RESTAURANT_DIRECCION', 'Calle Reforma 12, Santa Julia, 73310 Zacatlán, Pue.'),
     lat: num('RESTAURANT_LAT', null),
     lng: num('RESTAURANT_LNG', null),
   },

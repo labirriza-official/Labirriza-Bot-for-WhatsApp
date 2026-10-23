@@ -547,7 +547,7 @@ function confirmOrder(s) {
   const folio = String(orderId).padStart(4, '0');
   const entrega = d.delivery === 'domicilio'
     ? 'Ya lo estamos preparando y en breve sale hacia tu domicilio. 🛵'
-    : 'Ya lo estamos preparando; te avisamos por aquí cuando esté listo para recoger. 🛍️';
+    : `Ya lo estamos preparando; te avisamos por aquí cuando esté listo para recoger. 🛍️${config.restaurant.direccion ? `\n\n📍 Te esperamos en ${config.restaurant.direccion}` : ''}`;
   return {
     to: 'fin',
     orderId,
