@@ -169,8 +169,9 @@ const prompts = {
     return [M.buttons((nota ? nota + '\n\n' : '') + '¿Cómo quieres recibir tu pedido?', [B.recoger, B.domicilio])];
   },
 
-  ubicacion() {
-    return [M.locationRequest('¡Perfecto! 🛵 Toca *Enviar ubicación* para compartir dónde te entregamos y que el repartidor llegue sin problema.\n\nSi prefieres, también puedes escribir tu dirección.')];
+  ubicacion(s, { puedeRecoger } = {}) {
+    const recoger = puedeRecoger ? '\nSi mejor pasas por él, escribe *recoger*.' : '';
+    return [M.locationRequest('¡Perfecto! 🛵 Toca *Enviar ubicación* para compartir dónde te entregamos y que el repartidor llegue sin problema.\n\nSi prefieres, también puedes escribir tu dirección.' + recoger)];
   },
 
   telefono(s) {
@@ -320,7 +321,19 @@ const handlers = {
     const id = match(c, [B.agregar, B.modificar, B.continuar]);
     if (id === 'agregar') return go(s, 'menu');
     if (id === 'modificar') return go(s, 'editar_elegir');
-    if (id === 'continuar') return s.data.inCheckout && s.data.payment ? backToSummary(s, null) : go(s, 'entrega');
+    if (id === 'continuar') {
+      if (s.data.inCheckout && s.data.payment) return backToSummary(s, null);
+      if (s.data.preferencia === 'domicilio' && !s.data.delivery) {
+        s.data.delivery = 'domicilio';
+        return go(s, 'ubicacion', { puedeRecoger: true });
+      }
+      if (s.data.preferencia === 'recoger' && !s.data.delivery) {
+        s.data.delivery = 'recoger';
+        s.data.shipping = 0;
+        return nextAfterDelivery(s);
+      }
+      return go(s, 'entrega');
+    }
     return null;
   },
 
@@ -376,6 +389,12 @@ const handlers = {
       s.data.shipping = env.costo;
       if (msg.location.address || msg.location.name) s.data.address = [msg.location.name, msg.location.address].filter(Boolean).join(', ');
       return go(s, 'referencia');
+    }
+    if (msg.kind === 'text' && /^(recoger|paso por el|paso a recoger|para llevar)$/.test(norm(msg.text))) {
+      s.data.delivery = 'recoger';
+      s.data.shipping = 0;
+      delete s.data.location; delete s.data.address; delete s.data.reference; delete s.data.contactPhone;
+      return nextAfterDelivery(s);
     }
     if (msg.kind === 'text' && msg.text && msg.text.trim().length >= 6) {
       s.data.address = msg.text.trim().slice(0, 200);
@@ -565,6 +584,8 @@ const RESET_WORDS = ['inicio', 'reiniciar', 'empezar de nuevo', 'nuevo pedido'];
 
 // Textos de los disparadores de conversación (ice breakers) configurados en WhatsApp Manager, ya normalizados
 const DISPARADORES = ['hacer pedido', 'hacer un pedido', 'ver el menu', 'ver menu', 'ver promociones', 'hablar con alguien'];
+// Primer mensaje que ya pide algo (por ejemplo, el texto predeterminado del enlace de la página web)
+const QUIERE_PEDIR = /\b(pedir|pedido|ordenar)\b/;
 
 /**
  * Procesa un mensaje y devuelve { replies, orderId? }.
@@ -594,6 +615,17 @@ function handle(msg, ctx = {}) {
     // Si el primer mensaje ya es la elección de un botón (por ejemplo, un mensaje viejo), lo procesamos normal.
     // Igual con los disparadores de conversación de WhatsApp ("Hacer pedido", "Ver el menú"...):
     // el cliente ya eligió qué hacer, así que no le repetimos el saludo.
+    // Mensaje predeterminado de la página web ("Hola, quisiera pedir a domicilio"): el cliente ya dijo
+    // que quiere pedir, así que lo saludamos y le mandamos el menú en el mismo mensaje.
+    if (msg.kind === 'text' && !DISPARADORES.includes(typed) && QUIERE_PEDIR.test(typed)) {
+      if (/domicilio|a mi casa|envio/.test(typed)) s.data.preferencia = 'domicilio';
+      else if (/recoger|paso por|para llevar/.test(typed)) s.data.preferencia = 'recoger';
+      const nombre = s.data.profileName ? ' ' + s.data.profileName.split(' ')[0] : '';
+      const extra = s.data.preferencia === 'domicilio' ? ' Con gusto te lo llevamos a domicilio 🛵' : '';
+      s.state = 'menu';
+      db.saveSession(s);
+      return { replies: withNote(`¡Hola${nombre}! 👋 Bienvenido a *${config.restaurant.name}*.${extra}`, prompts.menu(s)) };
+    }
     if (msg.kind !== 'reply' && !DISPARADORES.includes(typed)) {
       const out = prompts.bienvenida(s, { first: true });
       db.saveSession(s);

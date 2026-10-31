@@ -6,7 +6,7 @@ const db = require('../src/db');
 
 test('pedido completo con botones, modificación y transferencia (como en las capturas)', () => {
   const c = cliente('5212221111111', 'Carlos');
-  let r = c.texto('Hola, me gustaría hacer un pedido.');
+  let r = c.texto('Hola');
   assert.deepEqual(opciones(r), ['hacer_pedido', 'promos', 'humano']);
   assert.match(textoDe(r), /Bienvenido a \*La Birriaza\*/);
 
@@ -231,4 +231,29 @@ test('disparadores de conversación de WhatsApp van directo a la opción', () =>
   c = cliente('5212228888884', 'Leo');
   r = c.texto('/menu');
   assert.deepEqual(opciones(r), ['hacer_pedido', 'promos', 'humano']);
+});
+
+test('mensaje predeterminado de la web: menú directo y entrega a domicilio sin volver a preguntar', () => {
+  const c = cliente('5212223330001', 'Luis Pérez');
+  let r = c.texto('Hola, quisiera pedir a domicilio');
+  assert.equal(r.replies.length, 1, 'saludo y menú en un solo mensaje');
+  assert.equal(r.replies[0].type, 'list');
+  assert.match(textoDe(r), /Hola Luis! 👋 Bienvenido a \*La Birriaza\*/);
+  assert.match(textoDe(r), /domicilio/);
+  c.opcion('item:quesabirria');
+  c.opcion('qty:2');
+  r = c.opcion('continuar');
+  assert.equal(r.replies[0].type, 'location_request');
+  assert.match(textoDe(r), /escribe \*recoger\*/);
+  r = c.texto('recoger');
+  assert.doesNotMatch(textoDe(r), /Enviar ubicación/);
+});
+
+test('mensaje predeterminado sin tipo de entrega pregunta cómo recibirlo', () => {
+  const c = cliente('5212223330002', 'Ana');
+  let r = c.texto('Hola, me gustaría hacer un pedido.');
+  assert.equal(r.replies[0].type, 'list');
+  c.opcion('item:postre'); c.opcion('qty:1');
+  r = c.opcion('continuar');
+  assert.deepEqual(opciones(r), ['recoger', 'domicilio']);
 });

@@ -66,7 +66,7 @@ test('rechaza mensajes con firma falsa', async () => {
 });
 
 test('pedido completo por el webhook genera los mensajes correctos para Meta', async () => {
-  await webhook({ type: 'text', text: { body: 'Hola, me gustaría hacer un pedido.' } });
+  await webhook({ type: 'text', text: { body: 'Hola' } });
   let m = sent.at(-1);
   assert.equal(m.to, '5212229999999');
   assert.equal(m.type, 'interactive');
