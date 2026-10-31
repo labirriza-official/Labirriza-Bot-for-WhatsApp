@@ -643,7 +643,7 @@ function handle(msg, ctx = {}) {
   if (msg.name && !s.data.profileName) s.data.profileName = msg.name;
 
   // "menu" en cualquier momento muestra el menú sin perder lo que ya lleva
-  if ((typed === 'menu' || typed === 'ver menu') && s.state !== 'menu') {
+  if (['menu', 'ver menu', 'ver el menu'].includes(typed) && s.state !== 'menu') {
     s.state = 'menu';
     db.saveSession(s);
     return { replies: prompts.menu(s) };
